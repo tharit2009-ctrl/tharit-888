@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+<title>MY NINJA REVENGE — STEAM WARRIOR by WORACHAT W.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <canvas id="viewport"></canvas>
+
+  <!-- ============ THEME TOGGLE (DARK / LIGHT) ============ -->
+  <button id="theme-toggle" class="theme-toggle" title="Toggle Dark / Light Mode [T]" aria-label="Toggle Dark / Light Mode">
+    <span id="theme-icon">🌙</span>
+    <span id="theme-text">DARK</span>
+  </button>
+
+  <!-- ============ BOOT / UNSUPPORTED ============ -->
+  <div id="screen-unsupported" class="screen hidden">
+    <div class="panel">
+      <h1>WEBGL UNAVAILABLE</h1>
+      <p>Your browser or device does not support WebGL2, which this game requires.
+         Try an up-to-date Chrome, Edge or Firefox on desktop.</p>
+    </div>
+  </div>
+
+  <!-- ============ LOADING ============ -->
+  <div id="screen-loading" class="screen">
+    <div class="loading-wrap">
+      <div class="brand-mark">S<span>·T·E·A·M</span></div>
+      <div class="loading-bar-track">
+        <div id="loading-bar-fill" class="loading-bar-fill"></div>
+      </div>
+      <div id="loading-label" class="loading-label">INITIALIZING…</div>
+      <div id="loading-sub" class="loading-sub">&nbsp;</div>
+    </div>
+  </div>
+
+  <!-- ============ MAIN MENU ============ -->
+  <div id="screen-menu" class="screen hidden">
+    <div class="menu-bg-glow"></div>
+    <div class="menu-content">
+      <div class="menu-title-block">
+        <div class="menu-eyebrow">MASKED &nbsp;·&nbsp; ARMED &nbsp;·&nbsp; ENGINEERED</div>
+        <h1 class="menu-title">NINJA REVENGE</h1>
+        <h2 class="menu-subtitle">STEAM WARRIOR</h2>
+      </div>
+      <nav class="menu-buttons">
+        <button class="menu-btn menu-btn-primary" data-action="start">START GAME</button>
+        <button class="menu-btn" data-action="character">CHARACTER</button>
+        <button class="menu-btn" data-action="upgrades">UPGRADES</button>
+        <button class="menu-btn" data-action="settings">SETTINGS</button>
+      </nav>
+      <div class="menu-footer">5 S.T.E.A.M. Zones Online: Courtyard · Tech District · Ruins · Temple · Citadel</div>
+    </div>
+  </div>
+
+  <!-- Character / Upgrades / Settings overlay panel -->
+  <div id="screen-subpanel" class="screen hidden">
+    <div class="subpanel">
+      <button id="subpanel-close" class="subpanel-close">×</button>
+      <div id="subpanel-body"></div>
+    </div>
+  </div>
+
+  <!-- ============ IN-GAME HUD ============ -->
+  <div id="hud" class="hidden">
+
+    <div class="hud-top-left">
+      <div class="hud-name">GAPHIL</div>
+      <div class="stat-row">
+        <span class="stat-label">HP</span>
+        <div class="stat-track"><div id="bar-hp" class="stat-fill hp"></div></div>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">ENERGY</span>
+        <div class="stat-track"><div id="bar-energy" class="stat-fill energy"></div></div>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">DARK-WIND</span>
+        <div class="stat-track"><div id="bar-darkwind" class="stat-fill darkwind"></div></div>
+      </div>
+    </div>
+
+    <div class="hud-top-right">
+      <div class="mission-label">MISSION</div>
+      <div id="mission-title" class="mission-title">Training Courtyard</div>
+      <div id="mission-objective" class="mission-objective">Defeat the patrol</div>
+    </div>
+
+    <div class="hud-center">
+      <div id="reticle" class="reticle"></div>
+      <div id="target-lock" class="target-lock hidden"></div>
+    </div>
+
+    <div class="hud-bottom-right">
+      <div class="ability" id="ability-attack"><span class="ability-key">LMB</span><span class="ability-name">Attack</span></div>
+      <div class="ability" id="ability-dash"><span class="ability-key">Q</span><span class="ability-name">Dash</span><div class="ability-cd"></div></div>
+      <div class="ability" id="ability-special"><span class="ability-key">R</span><span class="ability-name">Dark-Wind</span><div class="ability-cd"></div></div>
+      <div class="ability" id="ability-shuriken"><span class="ability-key">G</span><span class="ability-name">Shuriken</span><div class="ability-cd"></div></div>
+      <div class="ability" id="ability-interact"><span class="ability-key">E</span><span class="ability-name">Interact</span></div>
+      <div class="ability" id="ability-scanner"><span class="ability-key">F</span><span class="ability-name">Scan</span></div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+    <div id="puzzle-hint" class="puzzle-hint hidden">Press <b>E</b> to access energy console</div>
+  </div>
+
+  <!-- ============ PUZZLE OVERLAY ============ -->
+  <div id="puzzle-overlay" class="screen hidden">
+    <div class="puzzle-panel">
+      <div class="puzzle-header">
+        <div class="puzzle-title">ENERGY ROUTING — GATE LOCK</div>
+        <div class="puzzle-sub">Rotate each conduit so the current flows from SOURCE to GATE. Click a node to rotate it 90°.</div>
+      </div>
+      <div id="puzzle-grid" class="puzzle-grid"></div>
+      <div class="puzzle-footer">
+        <div id="puzzle-status" class="puzzle-status">CIRCUIT OPEN: NO</div>
+        <button id="puzzle-close" class="menu-btn">CLOSE [ESC]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PAUSE ============ -->
+  <div id="screen-pause" class="screen hidden">
+    <div class="panel">
+      <h1>PAUSED</h1>
+      <nav class="menu-buttons">
+        <button class="menu-btn menu-btn-primary" data-action="resume">RESUME</button>
+        <button class="menu-btn" data-action="settings">SETTINGS</button>
+        <button class="menu-btn" data-action="quit">QUIT TO MENU</button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ============ GAME OVER / LEVEL COMPLETE ============ -->
+  <div id="screen-end" class="screen hidden">
+    <div class="panel">
+      <h1 id="end-title">DEFEATED</h1>
+      <p id="end-sub" class="end-sub"></p>
+      <nav class="menu-buttons">
+        <button class="menu-btn menu-btn-primary" data-action="retry">RETRY</button>
+        <button class="menu-btn" data-action="quit">QUIT TO MENU</button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ============ DEBUG PANEL ============ -->
+  <div id="debug-panel" class="hidden">
+    <div>FPS: <span id="dbg-fps">0</span></div>
+    <div>Pos: <span id="dbg-pos">-</span></div>
+    <div>Cam: <span id="dbg-cam">-</span></div>
+    <div>Anim state: <span id="dbg-anim">-</span></div>
+    <div>Player state: <span id="dbg-state">-</span></div>
+    <div>Enemies: <span id="dbg-enemies">-</span></div>
+    <div>Draw calls: <span id="dbg-drawcalls">-</span></div>
+    <div>Triangles: <span id="dbg-tris">-</span></div>
+    <div class="dbg-hint">F1 colliders · F2 detection radii · F3 target-lock viz</div>
+  </div>
+
+  <!-- Mobile touch controls (shown only on touch devices) -->
+  <div id="touch-controls">
+    <div id="touch-joystick" class="touch-joystick" role="application" aria-label="Movement joystick"><div id="touch-joystick-knob" class="touch-joystick-knob"></div></div>
+    <div class="touch-buttons">
+      <button id="touch-attack" class="touch-btn" aria-label="Attack">ATK</button>
+      <button id="touch-dash" class="touch-btn" aria-label="Dash">DASH</button>
+      <button id="touch-jump" class="touch-btn" aria-label="Jump">JUMP</button>
+      <button id="touch-special" class="touch-btn" aria-label="Dark-Wind special">R</button>
+      <button id="touch-shuriken" class="touch-btn touch-btn-shuriken" aria-label="Throw shuriken">★</button>
+    </div>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
